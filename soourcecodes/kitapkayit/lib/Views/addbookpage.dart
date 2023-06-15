@@ -19,6 +19,7 @@ class AddBookPage extends StatefulWidget {
 }
 
 class _AddBookPageState extends State<AddBookPage> {
+  bool _isLoading = false;
   DatabaseService _databaseService = DatabaseService();
   final _key = GlobalKey<ExpandableFabState>();
   List<SelectedListItem> categories = Consts().categories;
@@ -74,89 +75,102 @@ Future<File> GetImage(ImageSource source) async {
           appBar: AppBar(
             title: const Text('Kitap Ekle'),
           ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                  height: 200,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: _imageUrl==""?Icon(Icons.camera_alt):Image.file(_image),
-                )
-              ]),
-              Expanded(
-                  child: ListView(
-                children: [
-                  buildPadding(
-                      controller: _nameController, labelText: 'Kitap Adı'),
-                  buildPadding(
-                      controller: _authorController, labelText: 'Yazar'),
-                  buildPadding(
-                      controller: _publisherController, labelText: 'Yayıncı'),
-                  buildPadding(
-                      controller: _descriptionController,
-                      labelText: 'Açıklama'),
-                  Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                      controller: _categoryController,
-                      onTap: () {
-                        DropDownState(
-                          DropDown(
-                            data: categories,
-                            bottomSheetTitle: Text('Kategori Seçiniz'),
-                            enableMultipleSelection: false,
-                            selectedItems: (List<dynamic> selectedList) {
+          body: Stack(
+            children: [Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                    height: 200,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: _imageUrl==""?Icon(Icons.camera_alt):Image.file(_image),
+                  )
+                ]),
+                Expanded(
+                    child: ListView(
+                  children: [
+                    buildPadding(
+                        controller: _nameController, labelText: 'Kitap Adı'),
+                    buildPadding(
+                        controller: _authorController, labelText: 'Yazar'),
+                    buildPadding(
+                        controller: _publisherController, labelText: 'Yayıncı'),
+                    buildPadding(
+                        controller: _descriptionController,
+                        labelText: 'Açıklama'),
+                    Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: TextField(
+                        controller: _categoryController,
+                        onTap: () {
+                          DropDownState(
+                            DropDown(
+                              data: categories,
+                              bottomSheetTitle: Text('Kategori Seçiniz'),
+                              enableMultipleSelection: false,
+                              selectedItems: (List<dynamic> selectedList) {
 
-                              for (var item in selectedList) {
-                                if (item is SelectedListItem) {
-                                  setState(() {
-                                    _categoryController.text =
-                                        item.value as String;
-                                  });
+                                for (var item in selectedList) {
+                                  if (item is SelectedListItem) {
+                                    setState(() {
+                                      _categoryController.text =
+                                          item.value as String;
+                                    });
+                                  }
                                 }
-                              }
-                            },
+                              },
+                            ),
+                          ).showModal(context);
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                        ).showModal(context);
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                          labelText: "Kategori",
                         ),
-                        labelText: "Kategori",
                       ),
                     ),
-                  ),
-                  ElevatedButton(
-                      onPressed: () async {
+                    ElevatedButton(
+
+                        onPressed: () async {
+
+                          setState(() {
+                            _isLoading = true;
+                          });
+
+                            await _databaseService.addBookImage(_image).then((value) => _imageUrl=value);
+                              print("indirmelinki: $_imageUrl");
+                              Book book = Book(
+                                  Name: _nameController.text,
+                                  Author: _authorController.text,
+                                  Publisher: _publisherController.text,
+                                  Category: _categoryController.text,
+                                  Description: _descriptionController.text,
+                                  ImageUrl: _imageUrl);
+                              await _databaseService.addBook(book);
+
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              Navigator.pop(context);
 
 
-                          await _databaseService.addBookImage(_image).then((value) => _imageUrl=value);
-                            print("indirmelinki: $_imageUrl");
-                            Book book = Book(
-                                Name: _nameController.text,
-                                Author: _authorController.text,
-                                Publisher: _publisherController.text,
-                                Category: _categoryController.text,
-                                Description: _descriptionController.text,
-                                ImageUrl: _imageUrl);
-                            await _databaseService.addBook(book);
-                            Navigator.pop(context);
 
 
+                        },
 
-
-                      },
-
-                      child: Text('Ekle')),
-                ],
-              )),
+                        child: Text('Ekle')),
+                  ],
+                )),
+              ],
+            ),
+              if (_isLoading) Center(child: CircularProgressIndicator())
             ],
+
           ),
 
           floatingActionButton: ExpandableFab(
