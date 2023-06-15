@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "998995666236",
+    "project_id": "homelibrary-6398d",
+    "storage_bucket": "homelibrary-6398d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998995666236:android:4016de252ba38b58196a39",
+        "android_client_info": {
+          "package_name": "com.enesusta.kitapkayitproject.kitapkayit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998995666236-m7nvvlmk52borilj0t69fd240rcmck4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnzArgNyG4XU5VYtbZdkYPm3zGLsl8vPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998995666236-m7nvvlmk52borilj0t69fd240rcmck4n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
